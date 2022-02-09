@@ -1,6 +1,6 @@
 mod layer;
-use layer::utils::generate_glorot_matrix;
+use layer::ConvolutionLayer;
 fn main() {
-    let matrix = generate_glorot_matrix(5, 8);
-    println!("{}", matrix);
+    let layer = ConvolutionLayer::new(2000, 1403, 16);
+    println!("{:?}", layer);
 }
