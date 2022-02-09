@@ -2,14 +2,15 @@ extern crate nalgebra as na;
 use na::{DMatrix, DVector};
 
 #[derive(Debug)]
-pub struct ConvolutionLayer {
+pub struct ConvolutionLayer<'a> {
     nodes_num: usize,
     input_features_num: usize,
     output_features_num: usize,
+    laplacian: &'a DMatrix<f32>,
     weights: DMatrix<f32>,
 }
 
-impl ConvolutionLayer {
+impl<'a> ConvolutionLayer<'a> {
     /// Creates a new layer with random initialized weights
     /// Arguments:
     /// * `nodes_num` - The number of nodes in the graph
@@ -17,13 +18,24 @@ impl ConvolutionLayer {
     ///     Should be same as `output_features_num` of the previous layer
     ///     or be equal to the number of features in the dataset if it's the 1st layer
     /// * `output_features_num` - The number of features in the output feature matrix
-    pub fn new(nodes_num: usize, input_features_num: usize, output_features_num: usize) -> Self {
+    pub fn new(
+        nodes_num: usize,
+        input_features_num: usize,
+        output_features_num: usize,
+        laplacian: &'a DMatrix<f32>,
+    ) -> Self {
         ConvolutionLayer {
             nodes_num,
             input_features_num,
             output_features_num,
+            laplacian,
             weights: utils::generate_glorot_matrix(input_features_num, output_features_num),
         }
+    }
+
+    /// Applies weights to a given feature matrix of size `nodes_num x input_features_num` and returns a matrix of size `nodes_num x output_features_num`
+    pub fn apply(self, feature_matrix: &DMatrix<f32>) -> DMatrix<f32> {
+        self.laplacian * feature_matrix * self.weights
     }
 }
 
