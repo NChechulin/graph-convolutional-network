@@ -1,7 +1,8 @@
 mod layer;
-use layer::ConvolutionLayer;
+mod model;
 extern crate nalgebra as na;
-use na::{DMatrix, Matrix5x4};
+use model::GCN;
+use na::DMatrix;
 
 fn sample_laplacian() -> DMatrix<f32> {
     DMatrix::from_vec(
@@ -27,7 +28,6 @@ fn sample_feature_matrix() -> DMatrix<f32> {
 fn main() {
     let feature_matrix = sample_feature_matrix();
     let laplacian = sample_laplacian();
-    let layer = ConvolutionLayer::new(5, 4, 2, &laplacian);
-    let result = layer.apply(&(feature_matrix as DMatrix<f32>));
-    println!("{:?}", result);
+
+    let gcn = GCN::new(&[4, 2, 2, 1], &laplacian, &laplacian);
 }

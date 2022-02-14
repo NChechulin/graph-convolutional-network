@@ -1,5 +1,5 @@
 extern crate nalgebra as na;
-use na::{DMatrix, DVector};
+use na::{DMatrix};
 
 #[derive(Debug)]
 pub struct ConvolutionLayer<'a> {
@@ -53,5 +53,23 @@ pub mod utils {
         let mut rng = rand::thread_rng();
 
         DMatrix::from_fn(height, width, |_r, _c| distribution.sample(&mut rng))
+    }
+
+    pub fn build_laplacian(adj_matrix: &DMatrix<f32>) -> DMatrix<f32> {
+        let n = adj_matrix.len();
+        std::assert!(n > 0, "Graph should have at least one node!");
+
+        let mut res = DMatrix::<f32>::zeros(n, n);
+
+        for i in 0..n {
+            // FIXME: fix i-th row sum
+            let mut row_sum: f32 = 0.0;
+            for j in 0..n {
+                row_sum += adj_matrix[(i, j)];
+            }
+            res[(i, i)] = row_sum;
+        }
+
+        res
     }
 }
