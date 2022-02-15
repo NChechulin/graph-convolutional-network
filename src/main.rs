@@ -1,8 +1,8 @@
 mod layer;
 mod model;
 extern crate nalgebra as na;
-use model::GCN;
-use na::{DMatrix, DVector};
+
+use na::DMatrix;
 
 fn sample_laplacian() -> DMatrix<f32> {
     DMatrix::from_vec(
