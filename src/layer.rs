@@ -1,5 +1,5 @@
 extern crate nalgebra as na;
-use na::{DMatrix};
+use na::{Const, DMatrix, Dynamic, Matrix, RowDVector, SliceStorage};
 
 #[derive(Debug)]
 pub struct ConvolutionLayer<'a> {
@@ -36,6 +36,38 @@ impl<'a> ConvolutionLayer<'a> {
     /// Applies weights to a given feature matrix of size `nodes_num x input_features_num` and returns a matrix of size `nodes_num x output_features_num`
     pub fn apply(self, feature_matrix: &DMatrix<f32>) -> DMatrix<f32> {
         self.laplacian * feature_matrix * self.weights
+    }
+}
+
+pub struct SoftmaxLayer {}
+
+impl SoftmaxLayer {
+    pub fn softmax(
+        row: &Matrix<f32, Const<1_usize>, Dynamic, SliceStorage<'_, f32, Const<1_usize>, Dynamic, Const<1_usize>, Dynamic>>,
+    ) -> RowDVector<f32> {
+        // FIXME
+        // OK at this point I am basically out of my mind
+        // and cannot pass a proper RowDVector into this function
+        // so I decided to take a shortcut and pass a 1xK matrix
+        
+        // assert!(row.len() == 1, "Row len: {}", row.len());
+        let mut sum: f32 = 0.0;
+
+        for &el in row {
+            sum += el.exp();
+        }
+
+        RowDVector::from_fn(row.len(), |_, el| row[el].exp() / sum)
+    }
+
+    pub fn apply(feature_matrix: &DMatrix<f32>) -> DMatrix<f32> {
+        let mut rows = vec![];
+
+        for i in 0..feature_matrix.nrows() {
+            rows.push(Self::softmax(&feature_matrix.row(i)));
+        }
+
+        DMatrix::<f32>::from_rows(&rows)
     }
 }
 

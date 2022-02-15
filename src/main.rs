@@ -2,7 +2,7 @@ mod layer;
 mod model;
 extern crate nalgebra as na;
 use model::GCN;
-use na::DMatrix;
+use na::{DMatrix, DVector};
 
 fn sample_laplacian() -> DMatrix<f32> {
     DMatrix::from_vec(
@@ -26,8 +26,14 @@ fn sample_feature_matrix() -> DMatrix<f32> {
     )
 }
 fn main() {
-    let feature_matrix = sample_feature_matrix();
-    let laplacian = sample_laplacian();
+    let some_matrix = sample_feature_matrix();
+    println!("{}", some_matrix);
+    let res = layer::SoftmaxLayer::apply(&some_matrix);
 
-    let gcn = GCN::new(&[4, 2, 2, 1], &laplacian, &laplacian);
+    println!("{}", res)
+
+    // let feature_matrix = sample_feature_matrix();
+    // let laplacian = sample_laplacian();
+
+    // let gcn = GCN::new(&[4, 2, 2, 1], &laplacian, &laplacian);
 }
